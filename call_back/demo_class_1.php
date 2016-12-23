@@ -2,11 +2,15 @@
 /**
  * @Author: anchen
  * @Date:   2016-03-06 20:59:54
- * @Last Modified by:   anchen
- * @Last Modified time: 2016-03-12 21:13:11
+ * @Last Modified by:   shishaoqi
+ * @Last Modified time: 2016-12-22 12:50:35
  * @Page 67
  */
+define('BASE_PATH', dirname(__DIR__));
+// Autoload 自动载入
+require BASE_PATH.'/vendor/autoload.php';
 header("Content-type: text/html; charset=utf-8"); 
+// 定义 BASE_PATH
 
 class Product {
     public $name;
@@ -28,7 +32,7 @@ class ProcessSale {
         $this->callbacks[] = $callback;
     }
 
-    function sale( $product ) {
+    function sale( Product $product ) {
         print ("{$product->name}: processing <br>");
         foreach( $this->callbacks as $callback ){
             call_user_func( $callback, $product );
@@ -57,11 +61,15 @@ print('<br>');
 print("<br>php5.3及其后续版本提供了更好的方法来实现该功能。<br>你可以简单地在一条语句中声明并分配
     函数。使用了新语法后的create_function()示例如下所示：<br>");
 $logger3 = function( $product ){
-    print(" logging ({$product->name})<br>");
+    print(" logging3 ({$product->name})<br>");
+};
+$logger4 = function( $product ){
+    print(" logging4 ({$product->name})<br>");
 };
 
 $processor = new ProcessSale();
 $processor->registerCallback( $logger3 );
+$processor->registerCallback( $logger4 );
 
 $processor->sale( new Product ("shoes", 6) );
 print "<br>";
@@ -69,7 +77,8 @@ $processor->sale( new Product ("coffee", 6) );
 print('<br>');
 
 //------回调不一定要匿名------
-print("<br>------回调不一定要匿名------<br>");
+print("<br>------回调不一定要匿名------");
+print("<br>你可以使用函数名（甚至是对象引用和方法)作为回调<br>");
 class Mailer {
     function doMail($product) {
         print("mailing({$product->name})<br>");
@@ -82,8 +91,8 @@ $processor->sale(new Product("shoes", 6));
 print("<br>");
 $processor->sale(new Product("coffee", 6));
 
-print("<br>");
-print("<br>方法 返回 匿名函数：<br>");
+
+print("<br>-------方法 返回 匿名函数---------<br>");
 
 class Totalizer {
     static function warnAmount() {
@@ -97,6 +106,7 @@ class Totalizer {
 
 $processor = new ProcessSale();
 $processor->registerCallback(Totalizer::warnAmount());
+$processor->sale(new Product("action", 6));
 
 print("<br>");
 print("<br>利用 use 子句，就可以让匿名函数追踪来自其父作用域的变量：<br>");
